@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💰 Finančni Kalkulator</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="description" content="Pametno načrtovanje proračuna za potovanje z dve-faznim prihranjanjem">
+    <meta name="theme-color" content="#11998e">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Finančni Plan">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Apple Touch Icon -->
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%2311998e'/%3E%3Ctext x='50' y='50' font-size='50' text-anchor='middle' dominant-baseline='middle' fill='white'%3E💰%3C/text%3E%3C/svg%3E">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            color: #11998e;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.2em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #11998e;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        input[type="number"], input[type="date"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1.1em;
+            transition: all 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #11998e;
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(17, 153, 142, 0.4);
+        }
+
+        .results {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+
+        .result-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .result-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .result-value {
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .result-small {
+            font-size: 1.3em;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+        }
+
+        .success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+        }
+
+        .tips {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        .tips h3 {
+            color: #1976d2;
+            margin-bottom: 10px;
+        }
+
+        .tips ul {
+            margin-left: 20px;
+        }
+
+        .tips li {
+            margin: 5px 0;
+        }
+
+        @media (max-width: 600px) {
+            .row {
+                grid-template-columns: 1fr;
+            }
+            
+            body {
+                padding: 10px;
+            }
+            
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 1.8em;
+            }
+            
+            .result-value {
+                font-size: 1.5em;
+            }
+            
+            button {
+                font-size: 1em;
+            }
+        }
+        
+        /* PWA standalone mode improvements */
+        @media all and (display-mode: standalone) {
+            body {
+                padding-top: env(safe-area-inset-top);
+                padding-bottom: env(safe-area-inset-bottom);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>💰 FINANČNI KALKULATOR</h1>
+        <p class="subtitle">Načrtovanje proračuna za potovanje</p>
+        
+        <!-- PWA Install Button -->
+        <div id="installContainer" style="text-align: center; margin-bottom: 15px; display: none;">
+            <button id="installButton" style="width: auto; padding: 12px 25px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); font-size: 1em;">
+                📱 NAMESTI NA TELEFON
+            </button>
+            <div style="margin-top: 5px; font-size: 0.85em; color: #666;">
+                Aplikacija bo delovala tudi brez interneta!
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-bottom: 20px;">
+            <button onclick="pocistiPodatke()" style="width: auto; padding: 10px 20px; background: #e74c3c; font-size: 0.9em;">
+                🗑️ POČISTI PODATKE & ZAČNI ZNOVA
+            </button>
+            <div style="margin-top: 5px; font-size: 0.85em; color: #666;">
+                <span id="lastSaved"></span>
+            </div>
+        </div>
+
+        <!-- PRIHRANKI -->
+        <div class="section">
+            <div class="section-title">📊 Vaši Prihranki</div>
+            <div class="row">
+                <div class="input-group">
+                    <label>Prihranki 2025 (€)</label>
+                    <input type="number" id="savings2025" value="4500" min="0">
+                </div>
+                <div class="input-group">
+                    <label>Prihranki 2026 (€)</label>
+                    <input type="number" id="savings2026" value="8200" min="0">
+                </div>
+            </div>
+            <div class="input-group">
+                <label>Cilj prihrankov do 30.11.2026 (€)</label>
+                <input type="number" id="targetSavings" value="6000" min="0">
+            </div>
+            <div class="input-group" style="background: #e8f5e9; padding: 15px; border-radius: 8px; margin-top: 15px;">
+                <label style="color: #2e7d32; font-weight: bold;">🎯 Hitrejše prihranjanje (opcijsko)</label>
+                <p style="font-size: 0.9em; color: #666; margin: 5px 0 10px 0;">
+                    Določite datum do kdaj želite doseči cilj 6000€. Do tega datuma boste manj porabili, 
+                    po tem datumu pa boste lahko porabo povečali.
+                </p>
+                <label>Želim doseči cilj do:</label>
+                <input type="date" id="earlyGoalDate">
+                <small style="color: #666; display: block; margin-top: 5px;">
+                    Pustite prazno za enakomerno razporeditev
+                </small>
+            </div>
+        </div>
+
+        <!-- TRENUTNA PORABA -->
+        <div class="section">
+            <div class="section-title">💳 Že Porabljeno</div>
+            <div class="input-group">
+                <label>Koliko ste že porabili do danes? (€)</label>
+                <input type="number" id="alreadySpent" value="0" min="0">
+            </div>
+            <div class="input-group">
+                <label>Današnji datum</label>
+                <input type="date" id="currentDate">
+            </div>
+        </div>
+
+        <!-- SLEDENJE MED POTOVANJEM -->
+        <div class="section" style="background: #fff9e6; border: 2px solid #ffc107;">
+            <div class="section-title" style="color: #f57c00;">📊 Sledenje Med Potovanjem (opcijsko)</div>
+            <p style="margin-bottom: 15px; color: #666;">
+                Če želite spremljati kako se držite načrta med potovanjem, izpolnite spodnje podatke:
+            </p>
+            <div class="row">
+                <div class="input-group">
+                    <label>Začetek potovanja</label>
+                    <input type="date" id="travelStart">
+                </div>
+                <div class="input-group">
+                    <label>Koliko ste porabili do danes? (€)</label>
+                    <input type="number" id="spentDuringTravel" value="0" min="0">
+                </div>
+            </div>
+            <button onclick="izracunajNapredek()" style="background: linear-gradient(135deg, #f57c00 0%, #ffc107 100%); margin-top: 10px;">
+                📈 PREVERI NAPREDEK
+            </button>
+            <div id="progressResults" style="display: none; margin-top: 15px; padding: 15px; background: white; border-radius: 10px;"></div>
+        </div>
+
+        <!-- NAČRTOVANJE -->
+        <div class="section">
+            <div class="section-title">🗓️ Načrtovanje Porabe na Potovanju</div>
+            <div class="input-group">
+                <label>Koliko dni boste na potovanju?</label>
+                <input type="number" id="travelDays" value="30" min="1">
+                <small style="color: #666;">Celoten proračun bo razdeljen na te dni</small>
+            </div>
+        </div>
+
+        <button onclick="izracunaj()">🧮 IZRAČUNAJ</button>
+
+        <!-- REZULTATI -->
+        <div id="results" style="display: none;">
+            <div class="results">
+                <div class="section-title" style="color: white; margin-bottom: 20px;">✨ Vaša Finančna Situacija</div>
+                
+                <div class="result-item">
+                    <div class="result-label">SKUPAJ LAHKO PORABITE</div>
+                    <div class="result-value" id="totalCanSpend">0 €</div>
+                </div>
+
+                <div class="grid">
+                    <div class="result-item">
+                        <div class="result-label">Skupaj prihranki</div>
+                        <div class="result-value result-small" id="totalSavings">0 €</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-label">Cilj prihrankov</div>
+                        <div class="result-value result-small" id="targetDisplay">0 €</div>
+                    </div>
+                </div>
+
+                <div class="result-item">
+                    <div class="result-label">ŠE LAHKO PORABITE (po odbitku že porabljenega)</div>
+                    <div class="result-value" id="remainingBudget">0 €</div>
+                </div>
+
+                <div class="grid">
+                    <div class="result-item">
+                        <div class="result-label">Na mesec (povprečno)</div>
+                        <div class="result-value result-small" id="perMonth">0 €</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-label">Na teden (povprečno)</div>
+                        <div class="result-value result-small" id="perWeek">0 €</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-label">Na dan (povprečno)</div>
+                        <div class="result-value result-small" id="perDay">0 €</div>
+                    </div>
+                </div>
+
+                <div class="result-item" id="travelSection" style="display: none;">
+                    <div class="result-label">🌍 PORABA NA POTOVANJU</div>
+                    <div style="margin-top: 10px; background: rgba(255,255,255,0.15); padding: 15px; border-radius: 8px;">
+                        <div style="font-size: 1.2em; margin: 8px 0; font-weight: bold;">
+                            ✈️ ŠTEVILO DNI: <span id="travelDaysDisplay"></span>
+                        </div>
+                        <div style="font-size: 2em; margin: 15px 0; color: #ffd700;">
+                            💰 <strong id="travelPerDay">0 €</strong> / dan
+                        </div>
+                        <div style="font-size: 1.1em; margin: 5px 0; opacity: 0.9;">
+                            Skupaj proračun za potovanje: <strong id="travelBudget">0 €</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="result-item" id="twoPhaseSection" style="display: none;">
+                    <div class="result-label">🎯 DVE-FAZNO NAČRTOVANJE - HITREJŠE PRIHRANJANJE</div>
+                    
+                    <div style="margin-top: 10px; background: rgba(255,255,255,0.15); padding: 15px; border-radius: 8px; border: 2px solid #ffd700;">
+                        <div style="font-size: 1.3em; margin: 8px 0; font-weight: bold; color: #ffd700;">
+                            📉 FAZA 1: AGRESIVNO PRIHRANJANJE
+                        </div>
+                        <div style="font-size: 1em; margin: 5px 0; opacity: 0.9;">
+                            Obdobje: Od danes do <strong id="phase1EndDate"></strong>
+                        </div>
+                        <div style="font-size: 1em; margin: 5px 0; opacity: 0.9;">
+                            Dni: <strong id="phase1Days"></strong>
+                        </div>
+                        <div style="font-size: 1.8em; margin: 15px 0; color: #ff6b6b;">
+                            💰 <strong id="phase1PerDay">0 €</strong> / dan
+                        </div>
+                        <div style="font-size: 1em; margin: 5px 0; opacity: 0.9;">
+                            Skupaj v fazi 1: <strong id="phase1Budget">0 €</strong>
+                        </div>
+                        <div style="font-size: 0.9em; margin-top: 10px; padding: 10px; background: rgba(255,107,107,0.3); border-radius: 5px;">
+                            ⚠️ V tem obdobju porabite MANJ kot običajno (40% normalne porabe), 
+                            da hitreje dosežete cilj 6000€ prihrankov!
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 15px; background: rgba(255,255,255,0.15); padding: 15px; border-radius: 8px; border: 2px solid #90ee90;">
+                        <div style="font-size: 1.3em; margin: 8px 0; font-weight: bold; color: #90ee90;">
+                            📈 FAZA 2: SPROŠČENA PORABA
+                        </div>
+                        <div style="font-size: 1em; margin: 5px 0; opacity: 0.9;">
+                            Obdobje: Od <strong id="phase2StartDate"></strong> do 30.11.2026
+                        </div>
+                        <div style="font-size: 1em; margin: 5px 0; opacity: 0.9;">
+                            Dni: <strong id="phase2Days"></strong>
+                        </div>
+                        <div style="font-size: 1.8em; margin: 15px 0; color: #90ee90;">
+                            💰 <strong id="phase2PerDay">0 €</strong> / dan
+                        </div>
+                        <div style="font-size: 1em; margin: 5px 0; opacity: 0.9;">
+                            Skupaj v fazi 2: <strong id="phase2Budget">0 €</strong>
+                        </div>
+                        <div style="font-size: 0.9em; margin-top: 10px; padding: 10px; background: rgba(144,238,144,0.3); border-radius: 5px;">
+                            🎉 Ko enkrat dosežete cilj 6000€, lahko v tem obdobju 
+                            porabite veliko VEČ na dan! Uživajte!
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 15px; padding: 15px; background: rgba(255,255,255,0.2); border-radius: 8px;">
+                        <div style="font-weight: bold; margin-bottom: 10px;">📊 PRIMERJAVA:</div>
+                        <div style="font-size: 0.95em;">
+                            • Normalna poraba: <strong id="normalCompare">0 €</strong> / dan (enakomerno vse leto)<br>
+                            • Faza 1 (hitro prihranjanje): <strong id="phase1Compare">0 €</strong> / dan (-60% 🔻)<br>
+                            • Faza 2 (sproščeno): <strong id="phase2Compare">0 €</strong> / dan (+X% 🔺)
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="messageBox"></div>
+
+            <div class="tips">
+                <h3>💡 Nasveti za pametno porabo na potovanju</h3>
+                <ul>
+                    <li><strong>Sledite svojim izdatkom</strong> - Vsak dan preverite, ali ste znotraj dnevnega proračuna</li>
+                    <li><strong>Rezerva za nujne primere</strong> - Poskusite porabiti 10-15% manj od planiranega na dan</li>
+                    <li><strong>DVE-FAZNO NAČRTOVANJE</strong> - Če ste izbrali hitrejše prihranjanje:
+                        <ul style="margin-top: 5px;">
+                            <li>V Fazi 1: Bodite disciplinirani! Porabite manj kot običajno (40%)</li>
+                            <li>V Fazi 2: Nagradite se! Ko dosežete cilj, lahko porabite več</li>
+                            <li>Psihološka prednost: Lažje je biti strog na začetku in sproščen kasneje</li>
+                        </ul>
+                    </li>
+                    <li><strong>Načrtujte vnaprej</strong> - Rezervirajte nastanitev in prevoz zgodaj za boljše cene</li>
+                    <li><strong>Lokalne ponudbe</strong> - Izkoristite lokalne restavracije in trge namesto turističnih pasti</li>
+                    <li><strong>Brezplačne aktivnosti</strong> - Iščite brezplačne muzeje, parke in oglede</li>
+                    <li><strong>Vodite dnevnik stroškov</strong> - Zapišite vsak večji izdatek, da ohranite pregled</li>
+                    <li><strong>Prilagodite med potovanjem</strong> - Če ste prvi teden porabili preveč, zmanjšajte porabo v prihodnjih dneh</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // PWA FUNKCIONALNOST
+        // ============================================
+        
+        // Registracija Service Workerja
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./service-worker.js')
+                    .then(registration => {
+                        console.log('✅ Service Worker registriran:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.log('❌ Service Worker registracija neuspešna:', error);
+                    });
+            });
+        }
+
+        // PWA Install Prompt
+        let deferredPrompt;
+        const installButton = document.getElementById('installButton');
+        const installContainer = document.getElementById('installContainer');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Prepreči privzeto prikazovanje
+            e.preventDefault();
+            // Shrani event za kasnejšo uporabo
+            deferredPrompt = e;
+            // Prikaži gumb za namestitev
+            installContainer.style.display = 'block';
+        });
+
+        installButton.addEventListener('click', async () => {
+            if (!deferredPrompt) {
+                return;
+            }
+            // Prikaži install prompt
+            deferredPrompt.prompt();
+            // Počakaj na uporabnikovo odločitev
+            const { outcome } = await deferredPrompt.userChoice;
+            console.log(`Uporabnik je izbral: ${outcome}`);
+            // Počisti prompt
+            deferredPrompt = null;
+            // Skrij gumb
+            installContainer.style.display = 'none';
+        });
+
+        // Ko je aplikacija nameščena
+        window.addEventListener('appinstalled', () => {
+            console.log('🎉 PWA aplikacija nameščena!');
+            installContainer.style.display = 'none';
+            deferredPrompt = null;
+        });
+
+        // ============================================
+        // OSTALA FUNKCIONALNOST
+        // ============================================
+        
+        // Nastavi današnji datum
+        document.getElementById('currentDate').value = new Date().toISOString().split('T')[0];
+        document.getElementById('travelStart').value = new Date().toISOString().split('T')[0];
+
+        // SHRANJEVANJE IN NALAGANJE PODATKOV
+        function shraniPodatke() {
+            const podatki = {
+                savings2025: document.getElementById('savings2025').value,
+                savings2026: document.getElementById('savings2026').value,
+                targetSavings: document.getElementById('targetSavings').value,
+                alreadySpent: document.getElementById('alreadySpent').value,
+                currentDate: document.getElementById('currentDate').value,
+                travelDays: document.getElementById('travelDays').value,
+                travelStart: document.getElementById('travelStart').value,
+                spentDuringTravel: document.getElementById('spentDuringTravel').value,
+                earlyGoalDate: document.getElementById('earlyGoalDate').value,
+                lastUpdate: new Date().toISOString()
+            };
+            localStorage.setItem('financniKalkulator', JSON.stringify(podatki));
+            
+            // Prikaži čas zadnjega shranjevanja
+            const now = new Date();
+            document.getElementById('lastSaved').textContent = 
+                `💾 Avtomatsko shranjeno: ${now.toLocaleString('sl-SI')}`;
+            
+            console.log('✅ Podatki shranjeni');
+        }
+
+        function naloziPodatke() {
+            const shranjeno = localStorage.getItem('financniKalkulator');
+            if (shranjeno) {
+                const podatki = JSON.parse(shranjeno);
+                document.getElementById('savings2025').value = podatki.savings2025 || 4500;
+                document.getElementById('savings2026').value = podatki.savings2026 || 8200;
+                document.getElementById('targetSavings').value = podatki.targetSavings || 6000;
+                document.getElementById('alreadySpent').value = podatki.alreadySpent || 0;
+                document.getElementById('currentDate').value = podatki.currentDate || new Date().toISOString().split('T')[0];
+                document.getElementById('travelDays').value = podatki.travelDays || 30;
+                document.getElementById('travelStart').value = podatki.travelStart || new Date().toISOString().split('T')[0];
+                document.getElementById('spentDuringTravel').value = podatki.spentDuringTravel || 0;
+                document.getElementById('earlyGoalDate').value = podatki.earlyGoalDate || '';
+                
+                // Prikaži kdaj so bili podatki nazadnje shranjeni
+                if (podatki.lastUpdate) {
+                    const lastUpdate = new Date(podatki.lastUpdate);
+                    document.getElementById('lastSaved').textContent = 
+                        `💾 Naloženi podatki iz: ${lastUpdate.toLocaleString('sl-SI')}`;
+                }
+                
+                console.log('✅ Podatki naloženi');
+                // Avtomatsko izračunaj ob nalaganju
+                izracunaj();
+            } else {
+                document.getElementById('lastSaved').textContent = 
+                    '💡 Ni shranjenih podatkov - začnite z vnosom';
+            }
+        }
+
+        function pocistiPodatke() {
+            if (confirm('Ali res želite počistiti vse shranjene podatke in začeti znova?')) {
+                localStorage.removeItem('financniKalkulator');
+                location.reload();
+            }
+        }
+
+        // Dodaj event listener na vse inpute za avtomatsko shranjevanje
+        window.addEventListener('load', function() {
+            // Naloži podatke ob zagonu
+            naloziPodatke();
+            
+            // Dodaj event listener na vse inpute
+            const inputs = document.querySelectorAll('input');
+            inputs.forEach(input => {
+                input.addEventListener('change', shraniPodatke);
+                input.addEventListener('blur', shraniPodatke);
+            });
+        });
+
+        function izracunajNapredek() {
+            const travelStart = new Date(document.getElementById('travelStart').value);
+            const currentDate = new Date(document.getElementById('currentDate').value);
+            const spentDuringTravel = parseFloat(document.getElementById('spentDuringTravel').value) || 0;
+            const travelDays = parseInt(document.getElementById('travelDays').value) || 1;
+            const remainingBudget = parseFloat(document.getElementById('remainingBudget').textContent.replace(' €', '')) || 0;
+            
+            // Koliko dni je že minilo
+            const timeDiff = currentDate - travelStart;
+            const daysPassed = Math.max(0, Math.ceil(timeDiff / (1000 * 60 * 60 * 24)));
+            
+            if (daysPassed > travelDays) {
+                document.getElementById('progressResults').innerHTML = `
+                    <div style="color: #e74c3c; font-weight: bold;">
+                        ⚠️ Število pretečenih dni (${daysPassed}) je večje od načrtovanih dni potovanja (${travelDays}).
+                        Prosim preverite datume.
+                    </div>
+                `;
+                document.getElementById('progressResults').style.display = 'block';
+                return;
+            }
+            
+            if (daysPassed === 0) {
+                document.getElementById('progressResults').innerHTML = `
+                    <div style="color: #2196f3; font-weight: bold;">
+                        ℹ️ Potovanje se še ni začelo ali je prvi dan.
+                    </div>
+                `;
+                document.getElementById('progressResults').style.display = 'block';
+                return;
+            }
+            
+            // Dnevni načrtovani proračun
+            const plannedPerDay = remainingBudget / travelDays;
+            
+            // Koliko bi morali porabiti do danes (načrtovano)
+            const plannedByNow = plannedPerDay * daysPassed;
+            
+            // Razlika med dejansko in načrtovano porabo
+            const difference = spentDuringTravel - plannedByNow;
+            const differencePercent = (difference / plannedByNow * 100).toFixed(1);
+            
+            // Preostali proračun in dnevi
+            const remainingMoney = remainingBudget - spentDuringTravel;
+            const remainingDays = travelDays - daysPassed;
+            
+            // Novi prilagojeni dnevni proračun
+            const adjustedPerDay = remainingDays > 0 ? remainingMoney / remainingDays : 0;
+            
+            // Povprečna poraba do danes
+            const actualAvgPerDay = spentDuringTravel / daysPassed;
+            
+            let statusColor, statusIcon, statusText;
+            if (difference < -plannedPerDay * 0.1) { // 10% pod načrtom
+                statusColor = '#2ecc71';
+                statusIcon = '🎉';
+                statusText = 'ODLIČNO! Pod načrtom';
+            } else if (difference < plannedPerDay * 0.1) { // ±10%
+                statusColor = '#3498db';
+                statusIcon = '✅';
+                statusText = 'SUPER! Na cilju';
+            } else if (difference < plannedPerDay * 0.3) { // do 30% nad
+                statusColor = '#f39c12';
+                statusIcon = '⚠️';
+                statusText = 'POZOR! Malo čez načrt';
+            } else {
+                statusColor = '#e74c3c';
+                statusIcon = '🚨';
+                statusText = 'ALARM! Precej čez načrt';
+            }
+            
+            document.getElementById('progressResults').innerHTML = `
+                <div style="text-align: center; padding: 15px; background: ${statusColor}; color: white; border-radius: 10px; margin-bottom: 15px;">
+                    <div style="font-size: 2em;">${statusIcon}</div>
+                    <div style="font-size: 1.5em; font-weight: bold; margin-top: 5px;">${statusText}</div>
+                </div>
+                
+                <div style="margin-bottom: 15px; padding: 10px; background: #f8f9fa; border-radius: 8px;">
+                    <div style="font-weight: bold; margin-bottom: 10px; color: #333;">📅 ČASOVNI PREGLED:</div>
+                    <div style="margin: 5px 0;">• Pretečeni dnevi: <strong>${daysPassed}</strong> / ${travelDays}</div>
+                    <div style="margin: 5px 0;">• Preostali dnevi: <strong>${remainingDays}</strong></div>
+                    <div style="margin: 5px 0;">• Napredek: <strong>${(daysPassed/travelDays*100).toFixed(1)}%</strong></div>
+                </div>
+                
+                <div style="margin-bottom: 15px; padding: 10px; background: #f8f9fa; border-radius: 8px;">
+                    <div style="font-weight: bold; margin-bottom: 10px; color: #333;">💰 FINANČNI PREGLED:</div>
+                    <div style="margin: 5px 0;">• Porabljeno: <strong>${spentDuringTravel.toFixed(0)} €</strong></div>
+                    <div style="margin: 5px 0;">• Načrtovano do danes: <strong>${plannedByNow.toFixed(0)} €</strong></div>
+                    <div style="margin: 5px 0; color: ${difference > 0 ? '#e74c3c' : '#2ecc71'};">
+                        • Razlika: <strong>${difference > 0 ? '+' : ''}${difference.toFixed(0)} € (${difference > 0 ? '+' : ''}${differencePercent}%)</strong>
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 15px; padding: 10px; background: #e3f2fd; border-radius: 8px; border-left: 4px solid #2196f3;">
+                    <div style="font-weight: bold; margin-bottom: 10px; color: #1976d2;">📊 MATEMATIČNA ANALIZA:</div>
+                    <div style="margin: 5px 0;">• Načrtovano na dan: <strong>${plannedPerDay.toFixed(2)} €</strong></div>
+                    <div style="margin: 5px 0;">• Dejansko na dan (dosedaj): <strong>${actualAvgPerDay.toFixed(2)} €</strong></div>
+                    <div style="margin: 5px 0; font-size: 1.1em; color: ${adjustedPerDay < plannedPerDay ? '#2ecc71' : '#e74c3c'};">
+                        • <strong>PRILAGOJENI proračun za naprej: ${adjustedPerDay.toFixed(2)} € / dan</strong>
+                    </div>
+                </div>
+                
+                <div style="padding: 15px; background: ${adjustedPerDay > plannedPerDay * 1.2 ? '#ffebee' : adjustedPerDay < plannedPerDay * 0.9 ? '#e8f5e9' : '#fff3e0'}; border-radius: 8px;">
+                    <div style="font-weight: bold; margin-bottom: 10px;">💡 PRIPOROČILO:</div>
+                    ${adjustedPerDay > plannedPerDay * 1.2 ? 
+                        `<div>Porabili ste <strong>${differencePercent}%</strong> več kot načrtovano. Za naslednjih <strong>${remainingDays} dni</strong> morate zmanjšati porabo na <strong>${adjustedPerDay.toFixed(2)} €/dan</strong> (${((adjustedPerDay - plannedPerDay) / plannedPerDay * 100).toFixed(0)}% več od prvotnega načrta). Priporočamo:</div>
+                        <ul style="margin: 10px 0 0 20px;">
+                            <li>Kuhajte več namesto restavracij</li>
+                            <li>Izberite cenejše nastanitve</li>
+                            <li>Omejite drage aktivnosti</li>
+                        </ul>` :
+                    adjustedPerDay < plannedPerDay * 0.9 ?
+                        `<div>Odlično! Porabili ste <strong>manj</strong> kot načrtovano. Lahko si privoščite <strong>${adjustedPerDay.toFixed(2)} €/dan</strong> za naslednjih <strong>${remainingDays} dni</strong> in boste še vedno znotraj proračuna. Ali pa prihranite še več! 🎉</div>` :
+                        `<div>Ste približno na cilju! Nadaljujte s porabo okoli <strong>${adjustedPerDay.toFixed(2)} €/dan</strong> za naslednjih <strong>${remainingDays} dni</strong>. 👍</div>`
+                    }
+                </div>
+                
+                <div style="margin-top: 15px; padding: 10px; background: #f0f0f0; border-radius: 8px; font-size: 0.9em;">
+                    <div style="font-weight: bold; margin-bottom: 5px;">🧮 Formula:</div>
+                    <code style="display: block; background: white; padding: 8px; border-radius: 4px; margin-top: 5px;">
+                        Novi proračun = (Preostali denar) ÷ (Preostali dnevi)<br>
+                        = (${remainingMoney.toFixed(0)} €) ÷ (${remainingDays} dni) = ${adjustedPerDay.toFixed(2)} € / dan
+                    </code>
+                </div>
+            `;
+            
+            document.getElementById('progressResults').style.display = 'block';
+            document.getElementById('progressResults').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            
+            // Shrani podatke
+            shraniPodatke();
+        }
+
+        function izracunaj() {
+            // Preberi vnose
+            const savings2025 = parseFloat(document.getElementById('savings2025').value) || 0;
+            const savings2026 = parseFloat(document.getElementById('savings2026').value) || 0;
+            const targetSavings = parseFloat(document.getElementById('targetSavings').value) || 0;
+            const alreadySpent = parseFloat(document.getElementById('alreadySpent').value) || 0;
+            const currentDate = new Date(document.getElementById('currentDate').value);
+            const travelDays = parseInt(document.getElementById('travelDays').value) || 1;
+            const earlyGoalDate = document.getElementById('earlyGoalDate').value;
+
+            // Izračuni
+            const totalSavings = savings2025 + savings2026;
+            const totalCanSpend = totalSavings - targetSavings;
+            const remainingBudget = totalCanSpend - alreadySpent;
+
+            // Dnevi do 30.11.2026 (samo za osnovni izračun)
+            const endDate = new Date('2026-11-30');
+            const timeDiff = endDate - currentDate;
+            const daysLeft = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+
+            // Povprečna poraba (splošno)
+            const perDay = remainingBudget / daysLeft;
+            const perWeek = perDay * 7;
+            const perMonth = perDay * 30;
+
+            // Poraba na potovanju - celoten proračun razdeljen na dni potovanja
+            const travelPerDay = remainingBudget / travelDays;
+            const travelBudget = remainingBudget;
+            
+            // DVE-FAZNO NAČRTOVANJE
+            let phase1Days = 0;
+            let phase2Days = 0;
+            let phase1PerDay = 0;
+            let phase2PerDay = 0;
+            let phase1Budget = 0;
+            let phase2Budget = 0;
+            let usingTwoPhase = false;
+            
+            if (earlyGoalDate) {
+                const goalDate = new Date(earlyGoalDate);
+                if (goalDate > currentDate && goalDate <= endDate) {
+                    usingTwoPhase = true;
+                    
+                    // FAZA 1: Od danes do datuma cilja (agresivno prihranjanje)
+                    const phase1Diff = goalDate - currentDate;
+                    phase1Days = Math.ceil(phase1Diff / (1000 * 60 * 60 * 24));
+                    
+                    // FAZA 2: Od datuma cilja do 30.11.2026 (sproščena poraba)
+                    const phase2Diff = endDate - goalDate;
+                    phase2Days = Math.ceil(phase2Diff / (1000 * 60 * 60 * 24));
+                    
+                    // V fazi 1 želimo prihraniti več - porabimo samo 40% normalnega
+                    // To pomeni da prihranimo hitreje in dosežemo cilj prej
+                    const phase1SpendRatio = 0.4; // 40% normalne porabe
+                    
+                    // Izračun: koliko denarja namenimo vsaki fazi
+                    const totalDays = phase1Days + phase2Days;
+                    const normalPhase1Budget = (phase1Days / totalDays) * remainingBudget;
+                    const normalPhase2Budget = (phase2Days / totalDays) * remainingBudget;
+                    
+                    // Faza 1: Zmanjšamo porabo
+                    phase1Budget = normalPhase1Budget * phase1SpendRatio;
+                    phase1PerDay = phase1Budget / phase1Days;
+                    
+                    // Faza 2: Preostanek lahko porabimo
+                    phase2Budget = remainingBudget - phase1Budget;
+                    phase2PerDay = phase2Budget / phase2Days;
+                }
+            }
+
+            // Prikaži rezultate
+            document.getElementById('totalSavings').textContent = totalSavings.toFixed(0) + ' €';
+            document.getElementById('targetDisplay').textContent = targetSavings.toFixed(0) + ' €';
+            document.getElementById('totalCanSpend').textContent = totalCanSpend.toFixed(0) + ' €';
+            document.getElementById('remainingBudget').textContent = remainingBudget.toFixed(0) + ' €';
+            document.getElementById('perDay').textContent = perDay.toFixed(2) + ' €';
+            document.getElementById('perWeek').textContent = perWeek.toFixed(0) + ' €';
+            document.getElementById('perMonth').textContent = perMonth.toFixed(0) + ' €';
+
+            // Prikaži potovalno sekcijo
+            document.getElementById('travelSection').style.display = 'block';
+            document.getElementById('travelDaysDisplay').textContent = travelDays;
+            document.getElementById('travelPerDay').textContent = travelPerDay.toFixed(2) + ' €';
+            document.getElementById('travelBudget').textContent = travelBudget.toFixed(0) + ' €';
+
+            // Prikaži dve-fazno načrtovanje, če je aktivirano
+            if (usingTwoPhase) {
+                document.getElementById('twoPhaseSection').style.display = 'block';
+                
+                const goalDate = new Date(earlyGoalDate);
+                document.getElementById('phase1EndDate').textContent = goalDate.toLocaleDateString('sl-SI');
+                document.getElementById('phase2StartDate').textContent = goalDate.toLocaleDateString('sl-SI');
+                document.getElementById('phase1Days').textContent = phase1Days;
+                document.getElementById('phase2Days').textContent = phase2Days;
+                document.getElementById('phase1PerDay').textContent = phase1PerDay.toFixed(2) + ' €';
+                document.getElementById('phase2PerDay').textContent = phase2PerDay.toFixed(2) + ' €';
+                document.getElementById('phase1Budget').textContent = phase1Budget.toFixed(0) + ' €';
+                document.getElementById('phase2Budget').textContent = phase2Budget.toFixed(0) + ' €';
+                
+                // Primerjava
+                document.getElementById('normalCompare').textContent = perDay.toFixed(2) + ' €';
+                document.getElementById('phase1Compare').textContent = phase1PerDay.toFixed(2) + ' €';
+                const phase2Increase = ((phase2PerDay - perDay) / perDay * 100).toFixed(0);
+                document.getElementById('phase2Compare').textContent = phase2PerDay.toFixed(2) + ' € (+' + phase2Increase + '%)';
+            } else {
+                document.getElementById('twoPhaseSection').style.display = 'none';
+            }
+
+            // Sporočila
+            const messageBox = document.getElementById('messageBox');
+            messageBox.innerHTML = '';
+
+            if (remainingBudget < 0) {
+                messageBox.innerHTML = `
+                    <div class="warning">
+                        <strong>⚠️ POZOR!</strong> Že ste presegli svoj proračun za ${Math.abs(remainingBudget).toFixed(0)} €. 
+                        Potrebujete dodatne prihodke ali zmanjšajte cilje prihrankov.
+                    </div>
+                `;
+            } else if (remainingBudget > 0) {
+                const percentage = (alreadySpent / totalCanSpend * 100).toFixed(1);
+                messageBox.innerHTML = `
+                    <div class="success">
+                        <strong>✅ Odlično!</strong> Še ste znotraj proračuna. 
+                        Porabili ste ${percentage}% od načrtovanega.
+                    </div>
+                `;
+            }
+
+            // Pokaži rezultate
+            document.getElementById('results').style.display = 'block';
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+            
+            // Shrani podatke
+            shraniPodatke();
+        }
+    </script>
+</body>
+</html>
