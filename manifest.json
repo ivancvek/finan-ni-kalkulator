@@ -2,7 +2,7 @@
   "name": "Finančni Kalkulator - Potovanje",
   "short_name": "Finančni Plan",
   "description": "Pametno načrtovanje proračuna za potovanje z dve-faznim prihranjanjem",
-  "start_url": "./financni_kalkulator.html",
+  "start_url":  ".",
   "display": "standalone",
   "background_color": "#11998e",
   "theme_color": "#11998e",
